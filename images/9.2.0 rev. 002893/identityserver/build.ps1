@@ -1,0 +1,1 @@
+docker image build --tag identityserver:latest --build-arg WDP_SI=Sitecore.IdentityServer.3.0.0-r00211.scwdp.zip  . 
