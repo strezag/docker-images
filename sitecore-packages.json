@@ -214,5 +214,9 @@
   "Sitecore Publishing Module 9.3.0.0 rev. r00546.2197.scwdp.zip": {
     "url": "",
     "hash": ""
+  },
+  "customized-database.scwdp.zip": {
+    "url": "",
+    "hash": ""
   }
 }

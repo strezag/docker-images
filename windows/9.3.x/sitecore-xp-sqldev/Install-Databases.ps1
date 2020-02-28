@@ -28,6 +28,19 @@ Get-ChildItem -Path $InstallPath -Filter "*.dacpac" | ForEach-Object {
     Invoke-Sqlcmd -Query "EXEC MASTER.dbo.sp_detach_db @dbname = N'$databaseName', @keepfulltextindexfile = N'false'"
 }
 
+Get-ChildItem -Path $InstallPath -Filter "*.bacpac" | ForEach-Object {
+    $databaseName = $_.BaseName
+    $dacpacPath = Join-Path $InstallPath ("\{0}" -f $_.Name)
+
+    # Install
+    & $sqlPackageExePath /a:Publish /sf:$dacpacPath /tdn:$databaseName /tsn:$env:COMPUTERNAME /q
+
+    # Detach
+    Invoke-Sqlcmd -Query "EXEC MASTER.dbo.sp_detach_db @dbname = N'$databaseName', @keepfulltextindexfile = N'false'"
+
+    Invoke-Sqlcmd -Query "ALTER USER [masteruser] WITH PASSWORD = 'Sitecor3SecureP4ssword!'"
+}
+
 $server = New-Object Microsoft.SqlServer.Management.Smo.Server($env:COMPUTERNAME)
 $server.Properties["DefaultFile"].Value = $DataPath
 $server.Properties["DefaultLog"].Value = $DataPath

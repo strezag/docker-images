@@ -33,3 +33,29 @@ Get-ChildItem -Path $Path -Filter "*_single.scwdp.zip" | ForEach-Object {
         }
     }
 }
+
+Get-ChildItem -Path $Path -Filter "*custom-db.scwdp.zip" | ForEach-Object {
+    $zipPath = $_.FullName
+
+    try
+    {
+        $stream = New-Object IO.FileStream($zipPath, [IO.FileMode]::Open)
+        $zip = New-Object IO.Compression.ZipArchive($stream, [IO.Compression.ZipArchiveMode]::Read)
+
+        ($zip.Entries | Where-Object { $_.FullName -like "*.bacpac" } ) | Foreach-Object {
+            [IO.Compression.ZipFileExtensions]::ExtractToFile($_, (Join-Path $Path $_.Name), $true)
+        }
+    }
+    finally
+    {
+        if ($zip -ne $null)
+        {
+            $zip.Dispose()
+        }
+
+        if ($stream -ne $null)
+        {
+            $stream.Dispose()
+        }
+    }
+}
